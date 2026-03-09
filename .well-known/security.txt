@@ -1,0 +1,5 @@
+Contact: https://github.com/vidita111/nagarseva/issues
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en, hi
+Canonical: https://vidita111.github.io/nagarseva/.well-known/security.txt
+Policy: https://github.com/vidita111/nagarseva/blob/main/SECURITY.md

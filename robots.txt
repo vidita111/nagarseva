@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /.env
+
+Sitemap: https://vidita111.github.io/nagarseva/sitemap.xml
