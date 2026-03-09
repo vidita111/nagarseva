@@ -27,7 +27,7 @@ The app will work without AI - it uses fallback values:
 2. Sign up or log in
 3. Navigate to API Keys section
 4. Create a new API key
-5. Copy the key (starts with `sk-ant-api03-`)
+5. Copy the key (Google AI Studio API key)
 
 #### Step 2: Set Up Netlify Environment Variables
 1. Go to your Netlify dashboard
