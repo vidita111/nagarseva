@@ -35,7 +35,10 @@ function parseStructuredOutput(text, defaultCategory) {
       const dept = line.replace('DEPARTMENT:', '').trim();
       if (dept) parsed.ai_department = dept.slice(0, 80);
     } else if (line.startsWith('PRIORITY:')) {
-      const priority = line.replace('PRIORITY:', '').trim();
+      let priority = line.replace('PRIORITY:', '').replace(/\*/g, '').trim();
+      if (priority.length > 0) {
+        priority = priority.charAt(0).toUpperCase() + priority.slice(1).toLowerCase();
+      }
       parsed.ai_priority = ALLOWED_PRIORITIES.includes(priority) ? priority : parsed.ai_priority;
     } else if (line.startsWith('SUMMARY:')) {
       const summary = line.replace('SUMMARY:', '').trim();
