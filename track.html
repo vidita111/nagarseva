@@ -152,18 +152,16 @@
   </div>
 </div>
 
+<script src="env.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
   import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+  import { firebaseConfig } from "./config.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyA4XzMdFjuC86wiKYS5hbZBMqYdkisFh-0",
-    authDomain: "nagarseva-crm.firebaseapp.com",
-    projectId: "nagarseva-crm",
-    storageBucket: "nagarseva-crm.firebasestorage.app",
-    messagingSenderId: "876853335899",
-    appId: "1:876853335899:web:5d593072b95019af6e2c7e"
-  };
+  // Validate configuration is loaded
+  if (!firebaseConfig.apiKey) {
+    console.error('Firebase configuration not loaded. Please check env.js');
+  }
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);

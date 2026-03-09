@@ -177,18 +177,16 @@
   </div>
 </div>
 
+<script src="env.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
   import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+  import { firebaseConfig } from "./config.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyA4XzMdFjuC86wiKYS5hbZBMqYdkisFh-0",
-    authDomain: "nagarseva-crm.firebaseapp.com",
-    projectId: "nagarseva-crm",
-    storageBucket: "nagarseva-crm.firebasestorage.app",
-    messagingSenderId: "876853335899",
-    appId: "1:876853335899:web:5d593072b95019af6e2c7e"
-  };
+  // Validate configuration is loaded
+  if (!firebaseConfig.apiKey) {
+    console.error('Firebase configuration not loaded. Please check env.js');
+  }
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -201,7 +199,7 @@
     return `NS-${new Date().getFullYear()}-${id}`;
   }
 
-  // Call Claude AI via Netlify proxy (key is hidden server-side)
+  // Call Gemini AI via secure Netlify proxy (key is hidden server-side)
   async function analyzeWithAI(title, description, category) {
     // Default fallback values if AI call fails
     const result = {
@@ -211,49 +209,26 @@
       ai_summary: 'Complaint received and is under review by the relevant department.'
     };
 
-    const prompt = `You are an AI for NagarSeva government CRM.
-Analyze this citizen complaint and respond ONLY in this exact format (no extra text):
-
-CATEGORY: [Roads/Water/Electricity/Sanitation/Public Safety/Other]
-DEPARTMENT: [specific government department name]
-PRIORITY: [High/Medium/Low]
-SUMMARY: [1-2 sentence professional summary]
-
-Title: ${title}
-Category: ${category}
-Description: ${description}`;
-
     try {
-      // Call our secure Netlify proxy instead of Anthropic directly
+      // Call our secure Netlify proxy (Gemini runs server-side)
       const res = await fetch('/.netlify/functions/ai-proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 300,
-          messages: [{ role: 'user', content: prompt }]
+          title,
+          description,
+          category
         })
       });
 
       const data = await res.json();
 
-      // Check for API-level errors (e.g. invalid key, quota exceeded)
-      if (data.error) {
-        console.warn('Anthropic API error:', data.error.message);
-        return result; // Return fallback — complaint still saves to Firebase
+      if (data?.result) {
+        result.ai_category = data.result.ai_category || result.ai_category;
+        result.ai_department = data.result.ai_department || result.ai_department;
+        result.ai_priority = data.result.ai_priority || result.ai_priority;
+        result.ai_summary = data.result.ai_summary || result.ai_summary;
       }
-
-      // Safely access the response text
-      const text = data?.content?.[0]?.text;
-      if (!text) return result;
-
-      // Parse each line of the structured AI response
-      text.split('\n').forEach(line => {
-        if (line.startsWith('CATEGORY:')) result.ai_category = line.replace('CATEGORY:', '').trim();
-        else if (line.startsWith('DEPARTMENT:')) result.ai_department = line.replace('DEPARTMENT:', '').trim();
-        else if (line.startsWith('PRIORITY:')) result.ai_priority = line.replace('PRIORITY:', '').trim();
-        else if (line.startsWith('SUMMARY:')) result.ai_summary = line.replace('SUMMARY:', '').trim();
-      });
 
     } catch(e) {
       console.warn('AI call failed, using defaults:', e.message);
