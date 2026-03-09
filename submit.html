@@ -226,6 +226,11 @@
         })
       });
 
+      if (!res.ok) {
+        console.warn('AI service unavailable (deploy to Netlify to enable). Using defaults.');
+        return result;
+      }
+
       const data = await res.json();
 
       if (data?.result) {
@@ -236,7 +241,7 @@
       }
 
     } catch(e) {
-      console.warn('AI call failed, using defaults:', e.message);
+      console.warn('AI service unavailable (deploy to Netlify to enable). Using defaults.');
       // Still return defaults so the complaint saves successfully
     }
 
