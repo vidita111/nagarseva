@@ -27,7 +27,10 @@ function looksLikeComplaint(text) {
 function parseStructuredOutput(text, defaultCategory) {
   const parsed = fallbackResult(defaultCategory);
 
-  String(text || '').split('\n').forEach((line) => {
+  String(text || '').split('\n').forEach((rawLine) => {
+    // LLMs often add markdown like **CATEGORY:** or `CATEGORY:` or leading spaces
+    const line = rawLine.replace(/[\*\_`]/g, '').trim();
+
     if (line.startsWith('CATEGORY:')) {
       const category = line.replace('CATEGORY:', '').trim();
       parsed.ai_category = ALLOWED_CATEGORIES.includes(category) ? category : parsed.ai_category;
@@ -35,7 +38,7 @@ function parseStructuredOutput(text, defaultCategory) {
       const dept = line.replace('DEPARTMENT:', '').trim();
       if (dept) parsed.ai_department = dept.slice(0, 80);
     } else if (line.startsWith('PRIORITY:')) {
-      let priority = line.replace('PRIORITY:', '').replace(/\*/g, '').trim();
+      let priority = line.replace('PRIORITY:', '').trim();
       if (priority.length > 0) {
         priority = priority.charAt(0).toUpperCase() + priority.slice(1).toLowerCase();
       }
