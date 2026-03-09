@@ -1,0 +1,24 @@
+{
+  "name": "nagarseva",
+  "version": "1.0.0",
+  "description": "Smart Public Service CRM",
+  "main": "config.js",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vidita111/nagarseva.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/vidita111/nagarseva/issues"
+  },
+  "homepage": "https://github.com/vidita111/nagarseva#readme",
+  "devDependencies": {
+    "netlify-cli": "^24.0.1"
+  }
+}
